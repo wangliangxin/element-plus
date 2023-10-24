@@ -12,6 +12,7 @@ import {
   watchEffect,
 } from 'vue'
 import { useResizeObserver } from '@vueuse/core'
+import { isNil } from 'lodash-unified'
 import ElIcon from '@element-plus/components/icon'
 import { More } from '@element-plus/icons-vue'
 import {
@@ -30,7 +31,7 @@ import { useMenuCssVar } from './use-menu-css-var'
 
 import type { MenuItemClicked, MenuProvider, SubMenuProvider } from './types'
 import type { NavigationFailure, Router } from 'vue-router'
-import type { ExtractPropTypes, VNode } from 'vue'
+import type { ExtractPropTypes, VNode, VNodeArrayChildren } from 'vue'
 import type { UseResizeObserverReturn } from '@vueuse/core'
 
 export const menuProps = buildProps({
@@ -65,6 +66,11 @@ export const menuProps = buildProps({
   ellipsis: {
     type: Boolean,
     default: true,
+  },
+  popperEffect: {
+    type: String,
+    values: ['dark', 'light'],
+    default: 'dark',
   },
 } as const)
 export type MenuProps = ExtractPropTypes<typeof menuProps>
@@ -153,11 +159,15 @@ export default defineComponent({
       emit('open', index, indexPath)
     }
 
-    const closeMenu: MenuProvider['closeMenu'] = (index, indexPath) => {
+    const close = (index: string) => {
       const i = openedMenus.value.indexOf(index)
       if (i !== -1) {
         openedMenus.value.splice(i, 1)
       }
+    }
+
+    const closeMenu: MenuProvider['closeMenu'] = (index, indexPath) => {
+      close(index)
       emit('close', index, indexPath)
     }
 
@@ -182,7 +192,7 @@ export default defineComponent({
       }
 
       const { index, indexPath } = menuItem
-      if (index === undefined || indexPath === undefined) return
+      if (isNil(index) || isNil(indexPath)) return
 
       if (props.router && router) {
         const route = menuItem.route || index
@@ -220,7 +230,10 @@ export default defineComponent({
     const calcSliceIndex = () => {
       if (!menu.value) return -1
       const items = Array.from(menu.value?.childNodes ?? []).filter(
-        (item) => item.nodeName !== '#text' || item.nodeValue
+        (item) =>
+          // remove comment type node #12634
+          item.nodeName !== '#comment' &&
+          (item.nodeName !== '#text' || item.nodeValue)
       ) as HTMLElement[]
       const moreItemWidth = 64
       const paddingLeft = Number.parseInt(
@@ -350,19 +363,20 @@ export default defineComponent({
         const { indexPath } = subMenus.value[index]
         indexPath.forEach((i) => openMenu(i, indexPath))
       }
+
       expose({
         open,
-        close: closeMenu,
+        close,
         handleResize,
       })
     }
 
     return () => {
-      let slot = slots.default?.() ?? []
+      let slot: VNodeArrayChildren = slots.default?.() ?? []
       const vShowMore: VNode[] = []
 
       if (props.mode === 'horizontal' && menu.value) {
-        const originalSlot = flattedChildren(slot)
+        const originalSlot = flattedChildren(slot) as VNodeArrayChildren
         const slotDefault =
           sliceIndex.value === -1
             ? originalSlot
