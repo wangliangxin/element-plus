@@ -1,3 +1,4 @@
+<!-- transition 是vue内置组件 -->
 <template>
   <transition :name="ns.b('fade')">
     <div

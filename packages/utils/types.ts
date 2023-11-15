@@ -12,6 +12,8 @@ export {
 } from '@vue/shared'
 export { isVNode } from 'vue'
 
+// ts 类型谓词 is 的用法
+
 export const isUndefined = (val: any): val is undefined => val === undefined
 export const isBoolean = (val: any): val is boolean => typeof val === 'boolean'
 export const isNumber = (val: any): val is number => typeof val === 'number'

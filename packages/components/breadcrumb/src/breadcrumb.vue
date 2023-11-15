@@ -1,3 +1,8 @@
+<!-- 
+    下面两个属性有利于网页可访问性
+    aria-label="Breadcrumb" 
+    role="navigation"
+ -->
 <template>
   <div
     ref="breadcrumb"

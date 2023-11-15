@@ -1,3 +1,4 @@
+<!-- 使用较少，与select组件很相似，这里不再细看了 -->
 <template>
   <el-tooltip
     ref="popperRef"

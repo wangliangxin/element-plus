@@ -1,3 +1,6 @@
+<!-- img的 srcset 是什么属性？ -->
+<!--  <img src="small.jpg" srcset="medium.jpg 1000w, large.jpg 2000w" alt="图像"> -->
+<!-- 在这个例子中，src 属性指定了默认的图像 (small.jpg)，而 srcset 属性指定了两个备选图像 (medium.jpg 和 large.jpg)，并且分别指定了它们的宽度描述符 (1000w 和 2000w)。浏览器会根据设备的屏幕分辨率和其他条件选择合适的图像进行加载。 -->
 <template>
   <span :class="avatarClass" :style="sizeStyle">
     <img

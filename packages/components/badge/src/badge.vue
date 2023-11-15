@@ -31,8 +31,10 @@ const props = defineProps(badgeProps)
 const ns = useNamespace('badge')
 
 const content = computed<string>(() => {
+  // 小红点的时候无文本
   if (props.isDot) return ''
 
+  // 数字类型，并且大于max时显示 max+
   if (isNumber(props.value) && isNumber(props.max)) {
     return props.max < props.value ? `${props.max}+` : `${props.value}`
   }
